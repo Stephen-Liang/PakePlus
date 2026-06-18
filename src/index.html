@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
+    <title>🏛️ 洚上村村委会 · 文件夹文件管理系统</title>
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===================== 全局重置 & 主题变量 ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --red-primary: #B71C1C;
+            --red-dark: #7F0000;
+            --red-light: #E53935;
+            --gold: #FBC02D;
+            --gold-light: #FFF3CD;
+            --cream: #FDF8F0;
+            --text-dark: #2C2C2C;
+            --text-gray: #4E4E4E;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 30px rgba(183, 28, 28, 0.15);
+            --radius: 20px;
+            --font-large: 22px;
+            --font-xl: 28px;
+            --font-xxl: 36px;
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--red-light);
+            border-radius: 20px;
+            border: 3px solid var(--cream);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--red-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            font-size: var(--font-large);
+            font-weight: 700;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            background: var(--cream);
+            color: var(--text-dark);
+            box-shadow: var(--shadow);
+        }
+        .btn i {
+            font-size: 24px;
+        }
+        .btn-primary {
+            background: var(--red-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--red-dark);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: var(--red-dark);
+        }
+        .btn-gold:hover {
+            background: #F9A825;
+            transform: scale(1.02);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 3px solid var(--red-primary);
+            color: var(--red-primary);
+        }
+        .btn-outline:hover {
+            background: var(--red-primary);
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 12px 24px;
+            font-size: 18px;
+            gap: 8px;
+        }
+        .btn-sm i {
+            font-size: 20px;
+        }
+        .btn-xs {
+            padding: 8px 16px;
+            font-size: 16px;
+            gap: 6px;
+            border-radius: 40px;
+        }
+        .btn-xs i {
+            font-size: 16px;
+        }
+
+        .badge {
+            background: var(--gold);
+            color: var(--red-dark);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--red-primary) 0%, var(--red-dark) 100%);
+            border-radius: var(--radius);
+            padding: 24px 36px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 25px rgba(183, 28, 28, 0.3);
+            border: 2px solid var(--gold);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header-left .logo-icon {
+            background: var(--gold);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--red-dark);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.3);
+        }
+        .header-left .title-group h1 {
+            color: #fff;
+            font-size: var(--font-xxl);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .header-left .title-group p {
+            color: var(--gold-light);
+            font-size: 20px;
+            font-weight: 500;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .header-right .date-display {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 12px 24px;
+            border-radius: 60px;
+            color: #fff;
+            font-size: var(--font-large);
+            font-weight: 600;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .header-right .date-display i {
+            margin-right: 10px;
+            color: var(--gold);
+        }
+        .header-right .upload-btn {
+            background: var(--gold);
+            color: var(--red-dark);
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-size: var(--font-large);
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .header-right .upload-btn:hover {
+            background: #F9A825;
+            transform: scale(1.04);
+        }
+        .header-right .upload-btn i {
+            font-size: 28px;
+        }
+
+        .section-title {
+            font-size: var(--font-xxl);
+            font-weight: 800;
+            color: var(--red-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 4px solid var(--gold);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .section-title i {
+            color: var(--gold);
+            font-size: 32px;
+        }
+        .section-title .title-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .folder-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 28px 16px 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            border: 4px solid transparent;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-height: 200px;
+            justify-content: center;
+            position: relative;
+        }
+        .folder-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-hover);
+        }
+        .folder-card.active {
+            border-color: var(--red-primary);
+            background: #FFF5F5;
+        }
+
+        .folder-card .folder-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .folder-card:hover .folder-icon {
+            transform: scale(1.05) rotate(-2deg);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+        }
+
+        .folder-card .folder-name {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-top: 6px;
+            line-height: 1.2;
+            letter-spacing: 1px;
+        }
+
+        .folder-card .folder-count {
+            font-size: 18px;
+            color: var(--text-gray);
+            background: var(--cream);
+            padding: 2px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        .folder-card .folder-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+        }
+        .folder-card .folder-actions button {
+            background: rgba(255, 255, 255, 0.92);
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        .folder-card .folder-actions button:hover {
+            transform: scale(1.1);
+        }
+        .folder-card .folder-actions .edit-folder-btn:hover {
+            background: var(--gold);
+            color: var(--red-dark);
+        }
+        .folder-card .folder-actions .delete-folder-btn:hover {
+            background: var(--red-primary);
+            color: #fff;
+        }
+
+        .add-folder-card {
+            background: transparent;
+            border: 4px dashed var(--gold);
+            box-shadow: none;
+            cursor: pointer;
+            min-height: 200px;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .add-folder-card:hover {
+            background: #FFF8E7;
+            border-color: var(--red-primary);
+            transform: scale(1.02);
+        }
+        .add-folder-card .add-icon {
+            font-size: 72px;
+            color: var(--gold);
+        }
+        .add-folder-card .add-label {
+            font-size: var(--font-xl);
+            font-weight: 700;
+            color: var(--text-gray);
+        }
+
+        .search-section {
+            margin-bottom: 24px;
+        }
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 60px;
+            padding: 6px 6px 6px 28px;
+            box-shadow: var(--shadow);
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        .search-wrapper:focus-within {
+            border-color: var(--red-primary);
+            box-shadow: 0 0 0 4px rgba(183, 28, 28, 0.1);
+        }
+        .search-wrapper i {
+            font-size: 28px;
+            color: var(--text-gray);
+            margin-right: 12px;
+        }
+        .search-wrapper input {
+            flex: 1;
+            border: none;
+            padding: 18px 8px;
+            font-size: var(--font-xl);
+            font-weight: 500;
+            outline: none;
+            background: transparent;
+            color: var(--text-dark);
+            min-width: 0;
+        }
+        .search-wrapper input::placeholder {
+            color: var(--text-gray);
+            font-weight: 400;
+        }
+        .search-wrapper .search-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .search-wrapper .search-actions .btn {
+            border-radius: 60px;
+            padding: 12px 28px;
+            font-size: 20px;
+        }
+
+        .file-area {
+            background: #ffffff;
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(183, 28, 28, 0.1);
+            min-height: 300px;
+        }
+
+        .file-area .area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+        .file-area .area-header h2 {
+            font-size: var(--font-xl);
+            font-weight: 700;
+            color: var(--red-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .file-area .area-header h2 i {
+            color: var(--gold);
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .file-item {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-left: 8px solid var(--gold);
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .file-item:hover {
+            background: #FFF8E7;
+            border-left-color: var(--red-primary);
+            transform: translateX(6px);
+        }
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 2 1 300px;
+            min-width: 200px;
+        }
+        .file-item .file-info .f-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--red-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+        .file-item .file-info .f-detail {
+            overflow: hidden;
+        }
+        .file-item .file-info .f-detail .f-name {
+            font-size: var(--font-large);
+            font-weight: 700;
+            color: var(--text-dark);
+            word-break: break-word;
+        }
+        .file-item .file-info .f-detail .f-meta {
+            font-size: 18px;
+            color: var(--text-gray);
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .file-item .file-info .f-detail .f-meta span {
+            background: #fff;
+            padding: 2px 14px;
+            border-radius: 40px;
+        }
+        .file-item .file-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .file-item .file-actions .btn {
+            padding: 12px 24px;
+            font-size: 20px;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+        .empty-state i {
+            font-size: 80px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+        .empty-state h3 {
+            font-size: var(--font-xxl);
+            color: var(--red-dark);
+        }
+        .empty-state p {
+            font-size: var(--font-large);
+            margin-top: 12px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 28px;
+            max-width: 700px;
+            width: 100%;
+            padding: 40px 44px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.25s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        .modal .modal-header h3 {
+            font-size: var(--font-xxl);
+            font-weight: 800;
+            color: var(--red-dark);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .modal .modal-header h3 i {
+            color: var(--gold);
+        }
+        .modal .close-btn {
+            background: var(--cream);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 36px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal .close-btn:hover {
+            background: var(--red-primary);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .modal .form-group {
+            margin-bottom: 24px;
+        }
+        .modal .form-group label {
+            display: block;
+            font-size: var(--font-large);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+        .modal .form-group input,
+        .modal .form-group select {
+            width: 100%;
+            padding: 18px 22px;
+            font-size: var(--font-large);
+            border: 2px solid var(--cream);
+            border-radius: 16px;
+            background: var(--cream);
+            transition: var(--transition);
+            outline: none;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        .modal .form-group input:focus,
+        .modal .form-group select:focus {
+            border-color: var(--red-primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(183, 28, 28, 0.1);
+        }
+        .modal .form-group .file-input-wrap {
+            background: var(--cream);
+            border: 3px dashed var(--gold);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal .form-group .file-input-wrap:hover {
+            background: #FFF8E7;
+        }
+        .modal .form-group .file-input-wrap i {
+            font-size: 50px;
+            color: var(--red-primary);
+        }
+        .modal .form-group .file-input-wrap p {
+            font-size: var(--font-large);
+            margin-top: 8px;
+            color: var(--text-gray);
+        }
+        .modal .form-group .file-input-wrap input[type="file"] {
+            display: none;
+        }
+
+        .modal .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 30px;
+            border-top: 2px solid var(--cream);
+            padding-top: 24px;
+        }
+        .modal .modal-footer .btn {
+            padding: 16px 40px;
+            font-size: var(--font-large);
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .toast {
+            background: var(--red-dark);
+            color: #fff;
+            padding: 20px 32px;
+            border-radius: 60px;
+            font-size: var(--font-large);
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-left: 8px solid var(--gold);
+            min-width: 280px;
+        }
+        .toast.success {
+            background: #1B5E20;
+        }
+        .toast.error {
+            background: #B71C1C;
+        }
+        .toast i {
+            font-size: 30px;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(80px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .header {
+                padding: 18px 20px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+            .header-left .title-group h1 {
+                font-size: 28px;
+            }
+            .header-left .title-group p {
+                font-size: 16px;
+            }
+            .header-left .logo-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 30px;
+            }
+            .header-right {
+                justify-content: space-between;
+            }
+            .header-right .date-display {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            .header-right .upload-btn {
+                font-size: 18px;
+                padding: 10px 20px;
+            }
+            .header-right .upload-btn i {
+                font-size: 22px;
+            }
+
+            .folder-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 16px;
+            }
+            .folder-card {
+                min-height: 160px;
+                padding: 18px 10px;
+            }
+            .folder-card .folder-icon {
+                width: 72px;
+                height: 72px;
+                font-size: 34px;
+                border-radius: 22px;
+            }
+            .folder-card .folder-name {
+                font-size: 24px;
+            }
+            .folder-card .folder-actions button {
+                width: 34px;
+                height: 34px;
+                font-size: 14px;
+            }
+            .search-wrapper {
+                padding: 4px 4px 4px 18px;
+            }
+            .search-wrapper input {
+                font-size: 20px;
+                padding: 14px 6px;
+            }
+            .search-wrapper i {
+                font-size: 22px;
+            }
+            .search-wrapper .search-actions .btn {
+                padding: 8px 16px;
+                font-size: 16px;
+            }
+
+            .file-area {
+                padding: 16px;
+            }
+            .file-item {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px 20px;
+            }
+            .file-item .file-info {
+                flex: 1 1 auto;
+            }
+            .file-item .file-actions {
+                justify-content: stretch;
+            }
+            .file-item .file-actions .btn {
+                flex: 1;
+                min-width: 80px;
+                font-size: 18px;
+                padding: 12px 16px;
+            }
+
+            .modal {
+                padding: 24px;
+                margin: 12px;
+            }
+            .modal .modal-header h3 {
+                font-size: 24px;
+            }
+            .modal .modal-footer {
+                flex-direction: column;
+            }
+            .modal .modal-footer .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .toast-container {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+            }
+            .toast {
+                font-size: 18px;
+                padding: 16px 20px;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .folder-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            .folder-card .folder-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+                border-radius: 18px;
+            }
+            .folder-card .folder-name {
+                font-size: 20px;
+            }
+            .file-item .file-info .f-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 22px;
+            }
+            .file-item .file-info .f-detail .f-name {
+                font-size: 18px;
+            }
+            .file-item .file-info .f-detail .f-meta {
+                font-size: 15px;
+            }
+            .section-title .title-actions .btn {
+                padding: 10px 16px;
+                font-size: 16px;
+            }
+            .search-wrapper input {
+                font-size: 17px;
+            }
+            .search-wrapper .search-actions .btn {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== 头部 ===== -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-icon">
+                    <i class="fas fa-flag"></i>
+                </div>
+                <div class="title-group">
+                    <h1>🏛️ 洚上村村委会</h1>
+                    <p><i class="fas fa-star" style="color:var(--gold);"></i> 文件管理系统 · 党建引领 村务公开</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="date-display" id="dateDisplay">
+                    <i class="fas fa-calendar-alt"></i> <span id="currentDate"></span>
+                </div>
+                <button class="upload-btn" id="openUploadBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> 上传文件
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== 文件夹区域 ===== -->
+        <div class="section-title">
+            <div><i class="fas fa-folder-open"></i> 村务文件夹</div>
+            <div class="title-actions">
+                <button class="btn btn-primary btn-sm" id="addFolderBtn">
+                    <i class="fas fa-plus"></i> 新建文件夹
+                </button>
+            </div>
+        </div>
+
+        <div class="folder-grid" id="folderGrid">
+            <!-- 由 JS 动态生成 -->
+        </div>
+
+        <!-- ===== 搜索栏 ===== -->
+        <div class="search-section">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearchInput" placeholder="🔍 搜索所有文件（按文件名）..." autocomplete="off" />
+                <div class="search-actions">
+                    <button class="btn btn-outline btn-sm" id="clearSearchBtn" style="display:none;">
+                        <i class="fas fa-times"></i> 清除
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 文件列表区域 ===== -->
+        <div class="file-area" id="fileArea">
+            <div class="area-header">
+                <h2 id="areaTitle"><i class="fas fa-file-alt"></i> <span id="folderNameDisplay">请选择一个文件夹</span></h2>
+                <span class="badge" id="fileCountBadge">0 个文件</span>
+            </div>
+            <div id="fileListContainer">
+                <!-- 动态渲染 -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== 新增/编辑文件夹 模态框 ===== -->
+    <div class="modal-overlay" id="folderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="folderModalTitle"><i class="fas fa-folder"></i> 新建文件夹</h3>
+                <button class="close-btn" id="closeFolderModalBtn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="folderNameInput"><i class="fas fa-pen"></i> 文件夹名称</label>
+                <input type="text" id="folderNameInput" placeholder="请输入文件夹名称，如：党建工作" maxlength="30" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelFolderBtn">取消</button>
+                <button class="btn btn-primary" id="saveFolderBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 上传文件 模态框 ===== -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-upload"></i> 上传文件</h3>
+                <button class="close-btn" id="closeUploadBtn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="uploadFolderSelect"><i class="fas fa-folder"></i> 选择目标文件夹</label>
+                <select id="uploadFolderSelect">
+                    <option value="">-- 请先选择文件夹 --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-file"></i> 选择文件</label>
+                <div class="file-input-wrap" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击此处或拖拽文件到框内</p>
+                    <input type="file" id="fileInput" style="display:none;" />
+                </div>
+                <div id="filePreview" style="margin-top:16px; font-size:20px; font-weight:600; color:var(--red-primary);"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelUploadBtn">取消</button>
+                <button class="btn btn-primary" id="submitUploadBtn" disabled>确认上传</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Toast 容器 ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ================================================================
+        //  核心 JavaScript - 洚上村村委会 · 文件管理系统
+        //  修复：桌面端直接调用系统程序打开文件
+        // ================================================================
+
+        (function() {
+            'use strict';
+
+            // ---------- 常量 & 配置 ----------
+            const DB_NAME = 'VillageFileDB_v3';
+            const FOLDER_STORE = 'folders';
+            const FILE_STORE = 'files';
+            const DB_VERSION = 3;
+
+            const FOLDER_STYLE_MAP = {
+                '党建工作': { icon: 'fa-flag', color1: '#D32F2F', color2: '#B71C1C' },
+                '村务公开': { icon: 'fa-clipboard-list', color1: '#F57C00', color2: '#E65100' },
+                '惠农政策': { icon: 'fa-seedling', color1: '#388E3C', color2: '#1B5E20' },
+                '综治维稳': { icon: 'fa-shield-alt', color1: '#1976D2', color2: '#0D47A1' },
+                '乡村振兴': { icon: 'fa-mountain', color1: '#5D4037', color2: '#3E2723' },
+                '其他': { icon: 'fa-folder-open', color1: '#6D4C41', color2: '#4E342E' }
+            };
+
+            // ---------- 状态 ----------
+            let db = null;
+            let currentFolderId = null;
+            let editingFolderId = null;
+            let pendingFile = null;
+            let searchQuery = '';
+
+            // DOM 引用
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            const folderGrid = $('#folderGrid');
+            const fileListContainer = $('#fileListContainer');
+            const folderNameDisplay = $('#folderNameDisplay');
+            const fileCountBadge = $('#fileCountBadge');
+            const openUploadBtn = $('#openUploadBtn');
+            const addFolderBtn = $('#addFolderBtn');
+
+            const globalSearchInput = $('#globalSearchInput');
+            const clearSearchBtn = $('#clearSearchBtn');
+
+            const folderModal = $('#folderModal');
+            const folderModalTitle = $('#folderModalTitle');
+            const folderNameInput = $('#folderNameInput');
+            const closeFolderModalBtn = $('#closeFolderModalBtn');
+            const cancelFolderBtn = $('#cancelFolderBtn');
+            const saveFolderBtn = $('#saveFolderBtn');
+
+            const uploadModal = $('#uploadModal');
+            const closeUploadBtn = $('#closeUploadBtn');
+            const cancelUploadBtn = $('#cancelUploadBtn');
+            const submitUploadBtn = $('#submitUploadBtn');
+            const uploadFolderSelect = $('#uploadFolderSelect');
+            const fileInput = $('#fileInput');
+            const dropZone = $('#dropZone');
+            const filePreview = $('#filePreview');
+            const toastContainer = $('#toastContainer');
+            const dateSpan = $('#currentDate');
+
+            // ---------- 工具函数 ----------
+            function formatSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                const val = (bytes / Math.pow(k, i)).toFixed(1);
+                return val + ' ' + sizes[i];
+            }
+
+            function formatDate(ts) {
+                const d = new Date(ts);
+                return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }) +
+                    ' ' + d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function generateId() {
+                return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+            }
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            function getFolderStyle(name) {
+                const found = FOLDER_STYLE_MAP[name];
+                if (found) return found;
+                return { icon: 'fa-folder-open', color1: '#78909C', color2: '#546E7A' };
+            }
+
+            // ========== 桌面端辅助函数 ==========
+            function isTauri() {
+                return !!(window.__TAURI__ && window.__TAURI__.shell && window.__TAURI__.fs);
+            }
+
+            function dataURLToUint8Array(dataURL) {
+                const parts = dataURL.split(',');
+                const base64 = parts[1];
+                const binaryString = atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes;
+            }
+
+            function getTempFileName(originalName) {
+                const ext = originalName.includes('.') ? originalName.split('.').pop() : '';
+                const name = originalName.replace(/\.[^.]+$/, '');
+                const timestamp = Date.now();
+                return `${name}_${timestamp}.${ext}`;
+            }
+
+            // ---------- 打开文件（桌面版直接调用系统程序） ----------
+            async function openFileById(id) {
+                try {
+                    const all = await getAllFiles();
+                    const file = all.find(f => f.id === id);
+                    if (!file) {
+                        showToast('文件不存在', 'error');
+                        return;
+                    }
+
+                    // ===== Tauri 桌面环境：直接调用系统默认程序 =====
+                    if (isTauri()) {
+                        try {
+                            const { fs, shell, path } = window.__TAURI__;
+                            // 1. 获取临时目录
+                            const tempDir = await path.appLocalDataDir();
+                            // 2. 生成临时文件名
+                            const fileName = getTempFileName(file.name);
+                            const filePath = await path.join(tempDir, fileName);
+                            // 3. 将 DataURL 转为二进制并写入临时文件
+                            const bytes = dataURLToUint8Array(file.data);
+                            await fs.writeBinaryFile(filePath, bytes);
+                            // 4. 使用系统默认程序打开
+                            await shell.openPath(filePath);
+                            showToast(`正在打开: ${file.name}`, 'success');
+                            return;
+                        } catch (tauriErr) {
+                            console.error('Tauri API 调用失败:', tauriErr);
+                            // 如果 Tauri API 失败，回退到浏览器方式
+                            showToast('使用系统打开失败，尝试浏览器方式...', 'warning');
+                            // 继续执行下面的浏览器回退逻辑
+                        }
+                    }
+
+                    // ===== 浏览器回退方案 =====
+                    const response = await fetch(file.data);
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+
+                    // 对于 Office 文档，尝试下载方式（浏览器会提示"打开或保存"）
+                    const officeExts = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    if (officeExts.includes(ext)) {
+                        // 使用 <a> 标签下载，浏览器会弹出"打开或保存"对话框
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = file.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(url), 5000);
+                        showToast(`文件 "${file.name}" 已下载，请选择"打开"`, 'success');
+                        return;
+                    }
+
+                    // 其他文件类型：尝试在新窗口预览
+                    const previewExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'pdf', 'txt', 'md', 'html', 'htm',
+                        'csv'
+                    ];
+                    if (previewExts.includes(ext) || file.type.startsWith('image/') || file.type === 'application/pdf') {
+                        window.open(url, '_blank');
+                        setTimeout(() => URL.revokeObjectURL(url), 10000);
+                        showToast(`正在预览: ${file.name}`, 'success');
+                    } else {
+                        // 其他类型直接下载
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = file.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(url), 5000);
+                        showToast(`文件 "${file.name}" 已下载`, 'success');
+                    }
+                } catch (err) {
+                    console.error('打开文件失败:', err);
+                    showToast('打开文件失败，请重试', 'error');
+                }
+            }
+
+            // ---------- Toast 通知 ----------
+            function showToast(message, type = 'info', duration = 4000) {
+                const iconMap = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-circle',
+                    warning: 'fa-exclamation-triangle',
+                    info: 'fa-info-circle'
+                };
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `<i class="fas ${iconMap[type] || iconMap.info}"></i> ${message}`;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(60px)';
+                    toast.style.transition = '0.35s ease';
+                    setTimeout(() => toast.remove(), 350);
+                }, duration);
+            }
+
+            // ---------- IndexedDB 操作 ----------
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    request.onupgradeneeded = (e) => {
+                        const d = e.target.result;
+                        if (d.objectStoreNames.contains(FILE_STORE)) d.deleteObjectStore(FILE_STORE);
+                        if (d.objectStoreNames.contains(FOLDER_STORE)) d.deleteObjectStore(FOLDER_STORE);
+
+                        const folderStore = d.createObjectStore(FOLDER_STORE, { keyPath: 'id' });
+                        folderStore.createIndex('name', 'name', { unique: false });
+
+                        const fileStore = d.createObjectStore(FILE_STORE, { keyPath: 'id' });
+                        fileStore.createIndex('folderId', 'folderId', { unique: false });
+                        fileStore.createIndex('date', 'date', { unique: false });
+                        fileStore.createIndex('name', 'name', { unique: false });
+                    };
+                    request.onsuccess = (e) => resolve(e.target.result);
+                    request.onerror = (e) => reject(e.target.error);
+                });
+            }
+
+            // ---------- 文件夹 CRUD ----------
+            async function getAllFolders() {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FOLDER_STORE, 'readonly');
+                    const store = tx.objectStore(FOLDER_STORE);
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function getFolderById(id) {
+                const all = await getAllFolders();
+                return all.find(f => f.id === id) || null;
+            }
+
+            async function createFolder(name) {
+                const trimmed = name.trim();
+                if (!trimmed) throw new Error('文件夹名称不能为空');
+                const all = await getAllFolders();
+                if (all.some(f => f.name === trimmed)) throw new Error('文件夹名称已存在');
+                const folder = {
+                    id: generateId(),
+                    name: trimmed,
+                    createdAt: Date.now()
+                };
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FOLDER_STORE, 'readwrite');
+                    const store = tx.objectStore(FOLDER_STORE);
+                    const request = store.add(folder);
+                    request.onsuccess = () => resolve(folder);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function updateFolder(id, newName) {
+                const trimmed = newName.trim();
+                if (!trimmed) throw new Error('文件夹名称不能为空');
+                const all = await getAllFolders();
+                if (all.some(f => f.name === trimmed && f.id !== id)) throw new Error('文件夹名称已存在');
+                const folder = await getFolderById(id);
+                if (!folder) throw new Error('文件夹不存在');
+                folder.name = trimmed;
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FOLDER_STORE, 'readwrite');
+                    const store = tx.objectStore(FOLDER_STORE);
+                    const request = store.put(folder);
+                    request.onsuccess = () => resolve(folder);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function deleteFolder(id) {
+                const files = await getFilesByFolder(id);
+                if (files.length > 0) {
+                    throw new Error(`该文件夹内有 ${files.length} 个文件，请先清空文件夹再删除`);
+                }
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FOLDER_STORE, 'readwrite');
+                    const store = tx.objectStore(FOLDER_STORE);
+                    const request = store.delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            // ---------- 文件 CRUD ----------
+            async function getAllFiles() {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FILE_STORE, 'readonly');
+                    const store = tx.objectStore(FILE_STORE);
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function getFilesByFolder(folderId) {
+                const all = await getAllFiles();
+                return all.filter(f => f.folderId === folderId);
+            }
+
+            async function saveFile(fileData) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FILE_STORE, 'readwrite');
+                    const store = tx.objectStore(FILE_STORE);
+                    const request = store.add(fileData);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function deleteFileById(id) {
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(FILE_STORE, 'readwrite');
+                    const store = tx.objectStore(FILE_STORE);
+                    const request = store.delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            // ---------- 读取文件为 DataURL ----------
+            function readFileAsDataURL(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e.target.error);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // ---------- 渲染文件夹 ----------
+            async function renderFolders() {
+                try {
+                    const folders = await getAllFolders();
+                    let html = '';
+                    folders.forEach(folder => {
+                        const active = currentFolderId === folder.id ? 'active' : '';
+                        const style = getFolderStyle(folder.name);
+                        const gradient = `linear-gradient(135deg, ${style.color1}, ${style.color2})`;
+                        html += `
+                            <div class="folder-card ${active}" data-folder-id="${folder.id}">
+                                <div class="folder-icon" style="background: ${gradient};">
+                                    <i class="fas ${style.icon}"></i>
+                                </div>
+                                <div class="folder-name">${escapeHtml(folder.name)}</div>
+                                <div class="folder-count" id="folder-count-${folder.id}">0 个文件</div>
+                                <div class="folder-actions">
+                                    <button class="edit-folder-btn" data-id="${folder.id}" title="编辑文件夹"><i class="fas fa-pen"></i></button>
+                                    <button class="delete-folder-btn" data-id="${folder.id}" title="删除文件夹"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `
+                        <div class="add-folder-card" id="addFolderCard">
+                            <div class="add-icon"><i class="fas fa-plus-circle"></i></div>
+                            <div class="add-label">新建文件夹</div>
+                        </div>
+                    `;
+                    folderGrid.innerHTML = html;
+
+                    for (const folder of folders) {
+                        const files = await getFilesByFolder(folder.id);
+                        const countEl = document.getElementById(`folder-count-${folder.id}`);
+                        if (countEl) countEl.textContent = `${files.length} 个文件`;
+                    }
+
+                    folderGrid.querySelectorAll('.folder-card').forEach(card => {
+                        const id = card.dataset.folderId;
+                        card.addEventListener('click', function(e) {
+                            if (e.target.closest('.folder-actions')) return;
+                            if (searchQuery) {
+                                searchQuery = '';
+                                globalSearchInput.value = '';
+                                clearSearchBtn.style.display = 'none';
+                            }
+                            currentFolderId = id;
+                            renderFolders();
+                            loadFiles();
+                        });
+                    });
+
+                    folderGrid.querySelectorAll('.edit-folder-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const id = this.dataset.id;
+                            openFolderModal(id);
+                        });
+                    });
+
+                    folderGrid.querySelectorAll('.delete-folder-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const id = this.dataset.id;
+                            confirmDeleteFolder(id);
+                        });
+                    });
+
+                    const addCard = document.getElementById('addFolderCard');
+                    if (addCard) {
+                        addCard.addEventListener('click', () => openFolderModal(null));
+                    }
+
+                    if (!searchQuery) {
+                        if (folders.length === 0) {
+                            currentFolderId = null;
+                            renderFileList([]);
+                            updateHeaderInfo(null, []);
+                        } else if (currentFolderId) {
+                            const exists = folders.some(f => f.id === currentFolderId);
+                            if (!exists) currentFolderId = folders[0].id;
+                            loadFiles();
+                        } else {
+                            currentFolderId = folders[0]?.id || null;
+                            loadFiles();
+                        }
+                    }
+
+                    if (currentFolderId && !searchQuery) {
+                        const folder = await getFolderById(currentFolderId);
+                        if (folder) folderNameDisplay.textContent = folder.name;
+                    } else if (!searchQuery) {
+                        folderNameDisplay.textContent = '请选择或创建文件夹';
+                    }
+
+                } catch (err) {
+                    console.error('渲染文件夹失败:', err);
+                    showToast('加载文件夹失败', 'error');
+                }
+            }
+
+            // ---------- 加载并渲染文件列表 ----------
+            async function loadFiles() {
+                try {
+                    let files = [];
+                    let isSearching = searchQuery.trim().length > 0;
+
+                    if (isSearching) {
+                        const all = await getAllFiles();
+                        const q = searchQuery.trim().toLowerCase();
+                        files = all.filter(f => f.name.toLowerCase().includes(q));
+                        folderNameDisplay.textContent = `🔍 搜索结果: "${searchQuery.trim()}"`;
+                    } else if (currentFolderId) {
+                        files = await getFilesByFolder(currentFolderId);
+                        const folder = await getFolderById(currentFolderId);
+                        if (folder) folderNameDisplay.textContent = folder.name;
+                    } else {
+                        files = [];
+                        folderNameDisplay.textContent = '请选择文件夹';
+                    }
+
+                    renderFileList(files);
+                    updateHeaderInfo(currentFolderId, files, isSearching);
+                } catch (err) {
+                    console.error('加载文件失败:', err);
+                    showToast('加载文件失败，请刷新重试', 'error');
+                }
+            }
+
+            function renderFileList(files) {
+                const container = fileListContainer;
+                if (!files || files.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>${searchQuery ? '未找到匹配文件' : '暂无文件'}</h3>
+                            <p>${searchQuery ? '请尝试其他关键词' : '请选择一个文件夹或上传文件'}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<div class="file-list">';
+                const sorted = [...files].sort((a, b) => b.date - a.date);
+                sorted.forEach(file => {
+                    html += `
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="f-icon" style="background:var(--red-primary);">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div class="f-detail">
+                                    <div class="f-name">${escapeHtml(file.name)}</div>
+                                    <div class="f-meta">
+                                        <span><i class="fas fa-weight-hanging"></i> ${formatSize(file.size)}</span>
+                                        <span><i class="fas fa-clock"></i> ${formatDate(file.date)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-primary btn-sm open-file-btn" data-id="${file.id}">
+                                    <i class="fas fa-eye"></i> 打开
+                                </button>
+                                <button class="btn btn-outline btn-sm delete-file-btn" data-id="${file.id}">
+                                    <i class="fas fa-trash-alt"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+
+                container.querySelectorAll('.open-file-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const id = this.dataset.id;
+                        openFileById(id);
+                    });
+                });
+                container.querySelectorAll('.delete-file-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const id = this.dataset.id;
+                        confirmDeleteFile(id);
+                    });
+                });
+            }
+
+            async function updateHeaderInfo(folderId, files, isSearching = false) {
+                if (isSearching) {
+                    fileCountBadge.textContent = `${files ? files.length : 0} 个匹配文件`;
+                    return;
+                }
+                if (folderId) {
+                    const folder = await getFolderById(folderId);
+                    if (folder) {
+                        fileCountBadge.textContent = `${files ? files.length : 0} 个文件`;
+                    }
+                } else {
+                    fileCountBadge.textContent = `${files ? files.length : 0} 个文件`;
+                }
+            }
+
+            // ---------- 删除文件 ----------
+            async function confirmDeleteFile(id) {
+                if (!confirm('⚠️ 确定要永久删除该文件吗？')) return;
+                try {
+                    await deleteFileById(id);
+                    showToast('文件已删除', 'success');
+                    await loadFiles();
+                    await renderFolders();
+                } catch (err) {
+                    showToast('删除失败', 'error');
+                }
+            }
+
+            // ---------- 文件夹模态框 ----------
+            function openFolderModal(folderId = null) {
+                editingFolderId = folderId;
+                if (folderId) {
+                    folderModalTitle.innerHTML = '<i class="fas fa-edit"></i> 编辑文件夹';
+                    getFolderById(folderId).then(f => {
+                        if (f) folderNameInput.value = f.name;
+                    });
+                } else {
+                    folderModalTitle.innerHTML = '<i class="fas fa-folder-plus"></i> 新建文件夹';
+                    folderNameInput.value = '';
+                }
+                folderModal.classList.add('active');
+                setTimeout(() => folderNameInput.focus(), 100);
+            }
+
+            function closeFolderModal() {
+                folderModal.classList.remove('active');
+                editingFolderId = null;
+                folderNameInput.value = '';
+            }
+
+            async function saveFolderHandler() {
+                const name = folderNameInput.value.trim();
+                if (!name) {
+                    showToast('请输入文件夹名称', 'warning');
+                    return;
+                }
+                try {
+                    if (editingFolderId) {
+                        await updateFolder(editingFolderId, name);
+                        showToast('文件夹已更新', 'success');
+                    } else {
+                        const newFolder = await createFolder(name);
+                        showToast('文件夹已创建', 'success');
+                        currentFolderId = newFolder.id;
+                    }
+                    closeFolderModal();
+                    searchQuery = '';
+                    globalSearchInput.value = '';
+                    clearSearchBtn.style.display = 'none';
+                    await renderFolders();
+                    await loadFiles();
+                } catch (err) {
+                    showToast(err.message || '操作失败', 'error');
+                }
+            }
+
+            // ---------- 删除文件夹 ----------
+            async function confirmDeleteFolder(id) {
+                if (!confirm('⚠️ 确定要删除该文件夹吗？\n\n注意：文件夹内必须为空才能删除。')) return;
+                try {
+                    await deleteFolder(id);
+                    showToast('文件夹已删除', 'success');
+                    if (currentFolderId === id) {
+                        currentFolderId = null;
+                        const folders = await getAllFolders();
+                        if (folders.length > 0) currentFolderId = folders[0].id;
+                    }
+                    await renderFolders();
+                    await loadFiles();
+                } catch (err) {
+                    showToast(err.message || '删除失败', 'error');
+                }
+            }
+
+            // ---------- 上传文件 ----------
+            async function openUploadModal() {
+                const folders = await getAllFolders();
+                if (folders.length === 0) {
+                    showToast('请先创建文件夹，再上传文件', 'warning');
+                    return;
+                }
+                const select = uploadFolderSelect;
+                select.innerHTML = '';
+                folders.forEach(f => {
+                    const opt = document.createElement('option');
+                    opt.value = f.id;
+                    opt.textContent = f.name;
+                    if (f.id === currentFolderId) opt.selected = true;
+                    select.appendChild(opt);
+                });
+                if (currentFolderId && !folders.some(f => f.id === currentFolderId)) {
+                    if (select.options.length > 0) select.selectedIndex = 0;
+                }
+                uploadModal.classList.add('active');
+                pendingFile = null;
+                filePreview.textContent = '';
+                submitUploadBtn.disabled = true;
+                fileInput.value = '';
+            }
+
+            function closeUploadModal() {
+                uploadModal.classList.remove('active');
+                pendingFile = null;
+                filePreview.textContent = '';
+                fileInput.value = '';
+                submitUploadBtn.disabled = true;
+            }
+
+            function handleFileSelect(file) {
+                if (!file) return;
+                if (file.size > 50 * 1024 * 1024) {
+                    showToast('文件超过 50MB 限制', 'warning');
+                    return;
+                }
+                pendingFile = file;
+                filePreview.innerHTML = `
+                    <i class="fas fa-check-circle" style="color:var(--gold);"></i> 
+                    已选择：<span style="color:var(--red-dark);">${escapeHtml(file.name)}</span> 
+                    (${formatSize(file.size)})
+                `;
+                submitUploadBtn.disabled = false;
+            }
+
+            async function performUpload() {
+                if (!pendingFile) return;
+                const folderId = uploadFolderSelect.value;
+                if (!folderId) {
+                    showToast('请选择目标文件夹', 'warning');
+                    return;
+                }
+                submitUploadBtn.disabled = true;
+                submitUploadBtn.textContent = '上传中...';
+                try {
+                    const data = await readFileAsDataURL(pendingFile);
+                    const fileData = {
+                        id: generateId(),
+                        name: pendingFile.name,
+                        size: pendingFile.size,
+                        type: pendingFile.type || 'application/octet-stream',
+                        folderId: folderId,
+                        date: Date.now(),
+                        data: data
+                    };
+                    await saveFile(fileData);
+                    showToast(`✅ 文件 "${pendingFile.name}" 上传成功！`, 'success');
+                    closeUploadModal();
+                    currentFolderId = folderId;
+                    searchQuery = '';
+                    globalSearchInput.value = '';
+                    clearSearchBtn.style.display = 'none';
+                    await renderFolders();
+                    await loadFiles();
+                } catch (err) {
+                    console.error('上传失败:', err);
+                    showToast('上传失败，请重试', 'error');
+                    submitUploadBtn.disabled = false;
+                    submitUploadBtn.textContent = '确认上传';
+                }
+            }
+
+            // ---------- 搜索逻辑 ----------
+            function handleSearch() {
+                const val = globalSearchInput.value;
+                searchQuery = val;
+                if (val.trim().length > 0) {
+                    clearSearchBtn.style.display = 'flex';
+                    currentFolderId = null;
+                    renderFolders();
+                    loadFiles();
+                } else {
+                    clearSearchBtn.style.display = 'none';
+                    if (currentFolderId === null) {
+                        getAllFolders().then(folders => {
+                            if (folders.length > 0) {
+                                currentFolderId = folders[0].id;
+                                renderFolders();
+                                loadFiles();
+                            } else {
+                                loadFiles();
+                            }
+                        });
+                    } else {
+                        renderFolders();
+                        loadFiles();
+                    }
+                }
+            }
+
+            // ---------- 初始化日期 ----------
+            function updateDate() {
+                const now = new Date();
+                const opts = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                dateSpan.textContent = now.toLocaleDateString('zh-CN', opts);
+            }
+
+            // ---------- 初始化示例数据 ----------
+            async function initSampleData() {
+                const folders = await getAllFolders();
+                if (folders.length > 0) return;
+
+                const folderNames = ['党建工作', '村务公开', '惠农政策', '综治维稳', '乡村振兴'];
+                const createdFolders = [];
+                for (const name of folderNames) {
+                    try {
+                        const f = await createFolder(name);
+                        createdFolders.push(f);
+                    } catch (e) { /* ignore */ }
+                }
+                if (createdFolders.length === 0) return;
+
+                const sampleContents = [
+                    '2026年党建工作计划与实施方案...',
+                    '第三季度村务公开报告...',
+                    '最新惠农补贴政策解读...',
+                    '村内综治维稳工作制度...',
+                    '乡村振兴重点项目清单...'
+                ];
+                for (let i = 0; i < Math.min(createdFolders.length, sampleContents.length); i++) {
+                    const folder = createdFolders[i];
+                    const content = sampleContents[i] || '示例文件内容...';
+                    const blob = new Blob([content], { type: 'text/plain' });
+                    const data = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(blob);
+                    });
+                    await saveFile({
+                        id: generateId(),
+                        name: `${folder.name}示例文件.txt`,
+                        size: blob.size,
+                        type: 'text/plain',
+                        folderId: folder.id,
+                        date: Date.now() - Math.random() * 86400000 * 10,
+                        data: data
+                    });
+                }
+                currentFolderId = createdFolders[0]?.id || null;
+                showToast('📂 已加载示例数据', 'info', 2000);
+            }
+
+            // ---------- 主初始化 ----------
+            async function init() {
+                try {
+                    db = await openDB();
+                    updateDate();
+                    await initSampleData();
+                    await renderFolders();
+                    await loadFiles();
+
+                    // ---- 事件绑定 ----
+
+                    // 搜索
+                    globalSearchInput.addEventListener('input', handleSearch);
+                    clearSearchBtn.addEventListener('click', function() {
+                        globalSearchInput.value = '';
+                        searchQuery = '';
+                        clearSearchBtn.style.display = 'none';
+                        getAllFolders().then(folders => {
+                            if (folders.length > 0 && !currentFolderId) {
+                                currentFolderId = folders[0].id;
+                            }
+                            renderFolders();
+                            loadFiles();
+                        });
+                    });
+
+                    // 新建文件夹
+                    addFolderBtn.addEventListener('click', () => openFolderModal(null));
+
+                    // 文件夹模态框
+                    closeFolderModalBtn.addEventListener('click', closeFolderModal);
+                    cancelFolderBtn.addEventListener('click', closeFolderModal);
+                    folderModal.addEventListener('click', function(e) {
+                        if (e.target === this) closeFolderModal();
+                    });
+                    saveFolderBtn.addEventListener('click', saveFolderHandler);
+                    folderNameInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') saveFolderHandler();
+                        if (e.key === 'Escape') closeFolderModal();
+                    });
+
+                    // 上传
+                    openUploadBtn.addEventListener('click', openUploadModal);
+                    closeUploadBtn.addEventListener('click', closeUploadModal);
+                    cancelUploadBtn.addEventListener('click', closeUploadModal);
+                    uploadModal.addEventListener('click', function(e) {
+                        if (e.target === this) closeUploadModal();
+                    });
+                    dropZone.addEventListener('click', () => fileInput.click());
+                    fileInput.addEventListener('change', function() {
+                        if (this.files.length > 0) handleFileSelect(this.files[0]);
+                        this.value = '';
+                    });
+
+                    // 拖拽上传
+                    dropZone.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.style.borderColor = 'var(--red-primary)';
+                        this.style.background = '#FFF0E0';
+                    });
+                    dropZone.addEventListener('dragleave', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.style.borderColor = 'var(--gold)';
+                        this.style.background = 'var(--cream)';
+                    });
+                    dropZone.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.style.borderColor = 'var(--gold)';
+                        this.style.background = 'var(--cream)';
+                        if (e.dataTransfer.files.length > 0) {
+                            handleFileSelect(e.dataTransfer.files[0]);
+                        }
+                    });
+
+                    // 全局拖拽
+                    document.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                    document.addEventListener('drop', async function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.dataTransfer.files.length > 0) {
+                            const folders = await getAllFolders();
+                            if (folders.length === 0) {
+                                showToast('请先创建文件夹再拖拽上传', 'warning');
+                                return;
+                            }
+                            await openUploadModal();
+                            setTimeout(() => {
+                                handleFileSelect(e.dataTransfer.files[0]);
+                            }, 300);
+                        }
+                    });
+
+                    submitUploadBtn.addEventListener('click', performUpload);
+
+                    // ESC 关闭
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            if (uploadModal.classList.contains('active')) closeUploadModal();
+                            if (folderModal.classList.contains('active')) closeFolderModal();
+                        }
+                    });
+
+                    showToast('🏛️ 洚上村村委会 · 文件管理系统已启动', 'success', 2000);
+
+                } catch (err) {
+                    console.error('初始化失败:', err);
+                    showToast('系统初始化失败，请刷新页面', 'error');
+                }
+            }
+
+            window.__reload = async () => {
+                await renderFolders();
+                await loadFiles();
+            };
+
+            init();
+
+        })();
+    </script>
+
+</body>
+</html>
