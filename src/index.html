@@ -1010,7 +1010,7 @@
     <script>
         // ================================================================
         //  核心 JavaScript - 洚上村村委会 · 文件管理系统
-        //  修复：桌面端直接调用系统程序打开文件
+        //  修复：桌面端直接调用系统程序打开文件（完整版）
         // ================================================================
 
         (function() {
@@ -1102,11 +1102,28 @@
                 return { icon: 'fa-folder-open', color1: '#78909C', color2: '#546E7A' };
             }
 
-            // ========== 桌面端辅助函数 ==========
+            // ========== 增强的 Tauri 检测 ==========
             function isTauri() {
-                return !!(window.__TAURI__ && window.__TAURI__.shell && window.__TAURI__.fs);
+                try {
+                    if (typeof window.__TAURI__ === 'undefined') return false;
+                    const { shell, fs, path } = window.__TAURI__;
+                    return !!(shell && shell.openPath && fs && fs.writeBinaryFile && path);
+                } catch (e) {
+                    return false;
+                }
             }
 
+            function checkTauriStatus() {
+                if (isTauri()) {
+                    showToast('✅ Tauri 环境已启用，将使用系统程序打开文件', 'success', 3000);
+                    console.log('Tauri API 可用');
+                } else {
+                    showToast('ℹ️ 当前运行在浏览器模式，将使用预览/下载', 'info', 3000);
+                    console.warn('Tauri API 不可用，使用回退方案');
+                }
+            }
+
+            // ========== DataURL 转 Uint8Array ==========
             function dataURLToUint8Array(dataURL) {
                 const parts = dataURL.split(',');
                 const base64 = parts[1];
@@ -1119,14 +1136,7 @@
                 return bytes;
             }
 
-            function getTempFileName(originalName) {
-                const ext = originalName.includes('.') ? originalName.split('.').pop() : '';
-                const name = originalName.replace(/\.[^.]+$/, '');
-                const timestamp = Date.now();
-                return `${name}_${timestamp}.${ext}`;
-            }
-
-            // ---------- 打开文件（桌面版直接调用系统程序） ----------
+            // ========== 打开文件（核心修复） ==========
             async function openFileById(id) {
                 try {
                     const all = await getAllFiles();
@@ -1136,40 +1146,49 @@
                         return;
                     }
 
-                    // ===== Tauri 桌面环境：直接调用系统默认程序 =====
+                    // ---- 优先使用 Tauri 直接打开系统程序 ----
                     if (isTauri()) {
                         try {
                             const { fs, shell, path } = window.__TAURI__;
-                            // 1. 获取临时目录
-                            const tempDir = await path.appLocalDataDir();
-                            // 2. 生成临时文件名
-                            const fileName = getTempFileName(file.name);
+                            // 获取可写临时目录
+                            let tempDir;
+                            try {
+                                tempDir = await path.appLocalDataDir();
+                            } catch (e) {
+                                tempDir = await path.tempDir();
+                            }
+                            // 生成唯一文件名（保留扩展名）
+                            const ext = file.name.includes('.') ? file.name.split('.').pop() : '';
+                            const baseName = file.name.replace(/\.[^.]+$/, '');
+                            const fileName = `${baseName}_${Date.now()}.${ext}`;
                             const filePath = await path.join(tempDir, fileName);
-                            // 3. 将 DataURL 转为二进制并写入临时文件
+
+                            // 写入二进制数据
                             const bytes = dataURLToUint8Array(file.data);
                             await fs.writeBinaryFile(filePath, bytes);
-                            // 4. 使用系统默认程序打开
+
+                            // 调用系统默认程序打开
                             await shell.openPath(filePath);
-                            showToast(`正在打开: ${file.name}`, 'success');
+                            showToast(`✅ 正在打开: ${file.name}（系统默认程序）`, 'success');
                             return;
                         } catch (tauriErr) {
-                            console.error('Tauri API 调用失败:', tauriErr);
-                            // 如果 Tauri API 失败，回退到浏览器方式
-                            showToast('使用系统打开失败，尝试浏览器方式...', 'warning');
-                            // 继续执行下面的浏览器回退逻辑
+                            console.error('Tauri 打开失败:', tauriErr);
+                            showToast(`⚠️ 系统打开失败: ${tauriErr.message || '未知错误'}，尝试浏览器方式`, 'warning');
+                            // 继续执行回退方案
                         }
                     }
 
-                    // ===== 浏览器回退方案 =====
+                    // ---- 浏览器回退方案 ----
                     const response = await fetch(file.data);
                     const blob = await response.blob();
                     const url = URL.createObjectURL(blob);
 
-                    // 对于 Office 文档，尝试下载方式（浏览器会提示"打开或保存"）
+                    // 判断是否为 Office 文档
                     const officeExts = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
                     const ext = file.name.split('.').pop().toLowerCase();
+
                     if (officeExts.includes(ext)) {
-                        // 使用 <a> 标签下载，浏览器会弹出"打开或保存"对话框
+                        // 使用 <a> 下载，浏览器会弹出"打开或保存"对话框
                         const a = document.createElement('a');
                         a.href = url;
                         a.download = file.name;
@@ -1177,11 +1196,11 @@
                         a.click();
                         document.body.removeChild(a);
                         setTimeout(() => URL.revokeObjectURL(url), 5000);
-                        showToast(`文件 "${file.name}" 已下载，请选择"打开"`, 'success');
+                        showToast(`文件 "${file.name}" 已下载，请在下载目录选择"打开"`, 'success');
                         return;
                     }
 
-                    // 其他文件类型：尝试在新窗口预览
+                    // 其他可预览文件（图片、PDF、文本等）
                     const previewExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'pdf', 'txt', 'md', 'html', 'htm',
                         'csv'
                     ];
@@ -1202,7 +1221,7 @@
                     }
                 } catch (err) {
                     console.error('打开文件失败:', err);
-                    showToast('打开文件失败，请重试', 'error');
+                    showToast(`打开失败: ${err.message}`, 'error');
                 }
             }
 
@@ -1817,6 +1836,9 @@
                     await initSampleData();
                     await renderFolders();
                     await loadFiles();
+
+                    // 检测 Tauri 状态
+                    checkTauriStatus();
 
                     // ---- 事件绑定 ----
 
